@@ -256,7 +256,7 @@ const DATA = {
     cloud: ["AWS Cloud Practitioner", "Azure", "GCP"],
   },
   experience: [
-    { role: "none", company: "NovaCorp", period: "none", desc: "none" },
+    { role: "Vibe coder", company: "Ghanta Corp", period: "2025–present", desc: "vibe coded the shit out of everything" },
   ],
   projects: {
     "palette_sync.txt": {
@@ -290,6 +290,8 @@ let history = [];
 let histIdx = -1;
 let matrixMode = false;
 let matrixInterval = null;
+let securityChallenge = false;
+let hiddenCommandsUnlocked = false;
 
 function print(text, cls = '') {
   const div = document.createElement('div');
@@ -337,23 +339,27 @@ const COMMANDS = {
     print(`<span class="section-header">┌─ AVAILABLE COMMANDS ────────────────────────────────────┐</span>`);
     print(`<span class="section-header">│</span>`);
     const cmds = [
-      ['help', 'Show this help menu'],
-      ['whoami', 'Display user info'],
-      ['ls', 'List files in current directory'],
-      ['cd &lt;dir&gt;', 'Change directory'],
-      ['cat &lt;file&gt;', 'Read a file'],
-      ['skills', 'View technical skills'],
-      ['experience', 'View work history'],
-      ['projects', 'List all projects'],
-      ['contact', 'Get contact information'],
-      ['clear', 'Clear the terminal'],
-      ['pwd', 'Print working directory'],
-      ['echo &lt;text&gt;', 'Echo text back'],
-      ['history', 'Command history'],
-      ['uname -a', 'System information'],
+      ['help', 'Show this help menu', false],
+      ['whoami', 'Display user info', false],
+      ['ls', 'List files in current directory', true],
+      ['cd &lt;dir&gt;', 'Change directory', true],
+      ['cat &lt;file&gt;', 'Read a file', true],
+      ['skills', 'View technical skills', false],
+      ['experience', 'View work history', false],
+      ['projects', 'List all projects', false],
+      ['contact', 'Get contact information', false],
+      ['clear', 'Clear the terminal', false],
+      ['pwd', 'Print working directory', true],
+      ['echo &lt;text&gt;', 'Echo text back', false],
+      ['history', 'Command history', false],
+      ['uname -a', 'System information', false],
     ];
-    cmds.forEach(([cmd, desc]) => {
-      print(`<span class="section-header">│</span>  <span class="highlight" style="display:inline-block;width:180px">${cmd}</span><span class="output-text">${desc}</span>`);
+    cmds.forEach(([cmd, desc, isNav]) => {
+      if (isNav) {
+        print(`<span class="section-header">│</span>  <span class="green-bright" style="display:inline-block;width:180px">${cmd}</span><span class="output-text">${desc}</span>  <span class="dim">← navigation</span>`);
+      } else {
+        print(`<span class="section-header">│</span>  <span class="highlight" style="display:inline-block;width:180px">${cmd}</span><span class="output-text">${desc}</span>`);
+      }
     });
     print(`<span class="section-header">│</span>`);
     print(`<span class="section-header">│</span>  <span class="dim">Hint: There are hidden commands. Keep digging...</span>`);
@@ -513,7 +519,7 @@ const COMMANDS = {
         print(`  <span class="output-text">› Believes every problem is a DSA problem</span>`);
         printBlank();
         print(`  <span class="dim">Bored? Try typing: <span class="highlight">snake</span></span>`);
-        print(`  <span class="dim">You didn't get this from me.</span>`);
+        print(`  <span class="dim">If you score more than 150 points, you'll unlock hidden commands.</span>`);
         print(`  <span class="dim">────────────── END OF FILE ──────────────</span>`);
         printBlank();
       },
@@ -564,6 +570,8 @@ const COMMANDS = {
   },
 
   projects() {
+    cwd = '~/projects';
+    updatePrompt();
     printBlank();
     print(`  <span class="section-header">── PROJECTS ─────────────────────────────</span>`);
     printBlank();
@@ -700,7 +708,6 @@ const COMMANDS = {
     const now = new Date().toLocaleDateString('en-US',{month:'short',day:'2-digit'});
     const files = [
       `drwxr-xr-x  visitor  staff   160 ${now} <span class="highlight">./</span>`,
-      `drwxr-xr-x  visitor  staff   128 ${now} <span class="dim">../</span>`,
       `drwxr-xr-x  visitor  staff    96 ${now} <span class="highlight">projects/</span>`,
       `drwxr-xr-x  visitor  staff    64 ${now} <span class="highlight">about/</span>`,
       `drwxr-xr-x  visitor  staff    64 ${now} <span class="highlight">contact/</span>`,
@@ -714,9 +721,15 @@ const COMMANDS = {
     printBlank();
   },
 
-  'cd .classified'() {
-    cwd = '~/.secret/.classified';
-    updatePrompt();
+  async 'cd .classified'() {
+    printBlank();
+    print(`<span class="error-text">⚠  CLASSIFIED DIRECTORY — SECURITY CLEARANCE REQUIRED</span>`);
+    print(`<span class="dim">──────────────────────────────────────────</span>`);
+    printBlank();
+    print(`<span class="amber">Security Question: What repeats itself many times but never gets bored?</span>`);
+    print(`<span class="dim">Enter your answer below:</span>`);
+    printBlank();
+    securityChallenge = true;
   },
 
   'cd .secret'() {
@@ -892,6 +905,41 @@ const COMMANDS = {
       print(`  <span class="output-text">Reason: <span class="amber">${reason}</span></span>`);
       print(`  <span class="output-text">Final Score: <span class="green-bright">${score}</span></span>`);
       printBlank();
+
+      if (score >= 150 && !hiddenCommandsUnlocked) {
+        hiddenCommandsUnlocked = true;
+        print(`  <span class="success">╔══════════════════════════════════════════════════╗</span>`);
+        print(`  <span class="success">║   🏆  ACHIEVEMENT UNLOCKED: SNAKE MASTER  🏆    ║</span>`);
+        print(`  <span class="success">╠══════════════════════════════════════════════════╣</span>`);
+        print(`  <span class="success">║  You scored ${String(score).padEnd(4)} — Hidden commands revealed!   ║</span>`);
+        print(`  <span class="success">╚══════════════════════════════════════════════════╝</span>`);
+        printBlank();
+        print(`  <span class="section-header">SECRET COMMANDS UNLOCKED:</span>`);
+        printBlank();
+        const hiddenCmds = [
+          ['joke',       'Hear a programmer joke'],
+          ['matrix',     'Enter the Matrix (toggle)'],
+          ['coffee',     'Brew a virtual coffee'],
+          ['hack',       'Initiate a hack sequence'],
+          ['sudo',       'Try to get root access'],
+          ['nmap',       'Scan open ports'],
+          ['banner',     'Show ASCII banner'],
+          ['ping &lt;host&gt;', 'Ping a host'],
+          ['uptime',     'Show system uptime'],
+          ['date',       'Print current date'],
+        ];
+        hiddenCmds.forEach(([cmd, desc]) => {
+          print(`    <span class="highlight" style="display:inline-block;width:180px">${cmd}</span><span class="output-text">${desc}</span>`);
+        });
+        printBlank();
+        print(`  <span class="dim">These commands are now yours. Use them wisely.</span>`);
+      } else if (score >= 150 && hiddenCommandsUnlocked) {
+        print(`  <span class="dim">Hidden commands already unlocked! Keep grinding. 🐍</span>`);
+      } else {
+        print(`  <span class="dim">Score 150+ to unlock hidden commands...</span>`);
+      }
+
+      printBlank();
       print(`  <span class="dim">Type 'snake' to play again.</span>`);
       printBlank();
     }
@@ -973,6 +1021,23 @@ const COMMANDS = {
 async function run(raw) {
   const trimmed = raw.trim();
   if (!trimmed) return;
+
+  if (securityChallenge) {
+    securityChallenge = false;
+    printPrompt(trimmed);
+    if (trimmed.toLowerCase() === 'loop') {
+      printBlank();
+      print(`<span class="success">✓ ACCESS GRANTED — Welcome to the classified zone.</span>`);
+      cwd = '~/.secret/.classified';
+      updatePrompt();
+    } else {
+      printBlank();
+      print(`<span class="error-text">✗ ACCESS DENIED — Incorrect answer.</span>`);
+      print(`<span class="dim">The classified directory remains locked.</span>`);
+    }
+    printBlank();
+    return;
+  }
 
   history.push(trimmed);
   histIdx = history.length;
